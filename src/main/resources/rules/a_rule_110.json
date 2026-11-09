@@ -1,0 +1,24 @@
+{
+  "name": "Rule 110",
+  "alphabet": ["0", "1", "X", "Y"],
+  "emptySpace": "Δ",
+  "delimiter": "#",
+  "initialState": "q_start",
+  "transitions": [    
+    { "state": "lc_11", "read": "1", "write": "1", "move": "R", "next": "carry_0", "comment": "111 -> 0" },
+    { "state": "lc_11", "read": "0", "write": "0", "move": "R", "next": "carry_1", "comment": "110 -> 1" },
+    { "state": "lc_10", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "101 -> 1" },
+    { "state": "lc_10", "read": "0", "write": "0", "move": "R", "next": "carry_0", "comment": "100 -> 0" },
+    { "state": "lc_01", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "011 -> 1" },
+    { "state": "lc_01", "read": "0", "write": "0", "move": "R", "next": "carry_1", "comment": "010 -> 1" },
+    { "state": "lc_00", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "001 -> 1" },
+    { "state": "lc_00", "read": "0", "write": "0", "move": "R", "next": "carry_0", "comment": "000 -> 0" },
+
+    { "comment": "carry_b: move right to the end of the new generation and write b" },
+
+    { "state": "carry_1", "read": "0", "write": "0", "move": "R", "next": "carry_1" },
+    { "state": "carry_1", "read": "1", "write": "1", "move": "R", "next": "carry_1" },
+    { "state": "carry_1", "read": "#", "write": "#", "move": "R", "next": "carry_1" },
+    { "state": "carry_1", "read": "_", "write": "1", "move": "L", "next": "back_to_mark" }
+  ]
+}

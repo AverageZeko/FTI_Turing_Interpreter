@@ -1,0 +1,12 @@
+{
+  "states": ["q0", "q1", "q_accept", "q_reject"],
+  "initial_state": "q0",
+  "accepting_states": ["q_accept"],
+  "delta": {
+    "q0": {
+      "0": ["0", "q0", "R"],
+      "1": ["1", "q0", "R"],
+      " ": [" ", "q_accept", "R"]
+    }
+  }
+}
