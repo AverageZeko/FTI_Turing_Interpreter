@@ -7,36 +7,67 @@ public class Tape {
     private ArrayList<Character> tape;
     private int headPosition;
  
-    public Tape() {
+    public Tape(String newTape) {
         tape = new ArrayList<>();
-        tape.add('Δ'); // Initialize the tape with a blank symbol
+        for (Character currentSymbol : newTape.toCharArray()) {
+            tape.add(currentSymbol);
+        }
         headPosition = 0;
     }
  
+    public int getHeadPosition() {
+        return headPosition;
+    }
+
     // Read the symbol at the current head position
-    public char read() {
+    public Character read() {
         return tape.get(headPosition);
     }
  
     // Write a symbol at the current head position
-    public void write(char symbol) {
+    public void write(Character symbol) {
         tape.set(headPosition, symbol);
     }
  
-    // Move the head left
+    // Move the head left, regardless of the current symbol in the tape
     public void moveLeft() {
-        if (headPosition == 0) {
-            tape.add(0, 'Δ'); // Add a blank symbol at the beginning if needed
-        } else {
+        headPosition--;
+    }
+
+    // Move the head left while the characterTarget is not equal to the current symbol in the tape
+    public void moveLeftUntil(Character characterTarget) {
+        headPosition--;
+        while (!tape.get(headPosition).equals(characterTarget)) {
+            headPosition--;
+        }
+    }
+
+    // Move the head left while the characterTarget is equal to the current symbol in the tape
+    public void moveLeftWhile(Character characterTarget) {
+        headPosition--;
+        while (tape.get(headPosition).equals(characterTarget)) {
             headPosition--;
         }
     }
  
-    // Move the head right
+    // Move the head right, regardless of the current symbol in the tape
     public void moveRight() {
         headPosition++;
-        if (headPosition == tape.size()) {
-            tape.add('Δ'); // Add a blank symbol at the end if needed
+    }
+
+    // Move the head right while the characterTarget is not equal to the current symbol in the tape
+    public void moveRightUntil(Character characterTarget) {
+        headPosition++;
+        while (!tape.get(headPosition).equals(characterTarget)) {
+            headPosition++;
+        }
+    }
+
+    // Move the head right while the characterTarget is equal to the current symbol in the tape
+    public void moveRightWhile(Character characterTarget) {
+        headPosition++;
+        while (tape.get(headPosition).equals(characterTarget)) {
+            headPosition++;
         }
     }
 }
