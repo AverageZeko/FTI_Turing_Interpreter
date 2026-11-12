@@ -1,4 +1,4 @@
-package turing.model;
+package turing.model.turing_machine;
 
 import java.util.ArrayList;
  
