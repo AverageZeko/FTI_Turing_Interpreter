@@ -1,14 +1,16 @@
 package turing.model.data;
 
 import java.util.List;
+import java.util.Set;
 
 import turing.model.dto.JsonDto;
 
 public class MachineDefinition {
     String name;
     String emptySpace;
-    String initialState;
     List<String> alphabet;
+	Set<String> states;
+	String initialState;
     List<String> haltStates;
     List<JsonDto> transitions;
 
@@ -23,6 +25,12 @@ public class MachineDefinition {
 	}
 	public void setEmptySpace(String emptySpace) {
 		this.emptySpace = emptySpace;
+	}
+	public Set<String> getStates() {
+		return states;
+	}
+	public void setStates(Set<String> states) {
+		this.states = states;
 	}
 	public String getInitialState() {
 		return initialState;
