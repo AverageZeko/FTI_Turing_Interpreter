@@ -10,7 +10,7 @@ public class Tape {
  
     /**
      * Constructor for the machine's tape.
-     * @param newTape the tape to be assigned, must have format like ΔΔΔ#s#s#ΔΔΔ where s is a binary.
+     * @param newTape the tape to be assigned, must have format like Δ#s#s#Δ where s is a binary.
      */
     public Tape(String newTape) {
         tape = new ArrayList<>();
@@ -21,7 +21,7 @@ public class Tape {
     }
  
     /**
-     * Returns the content of the tape as a string, e.g. ΔΔΔ#100#00010010#ΔΔΔ
+     * Returns the content of the tape as a string, e.g. Δ#100#00010010#Δ
      */
     @Override
     public String toString() {
