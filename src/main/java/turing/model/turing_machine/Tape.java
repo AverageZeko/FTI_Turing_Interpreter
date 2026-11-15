@@ -21,6 +21,18 @@ public class Tape {
     }
  
     /**
+     * Returns the content of the tape as a string, e.g. ΔΔΔ#100#00010010#ΔΔΔ
+     */
+    @Override
+    public String toString() {
+        StringBuilder content = new StringBuilder(tape.size());
+        for (Character symbol : tape) {
+            content.append(symbol);
+        }
+        return content.toString();
+    }
+
+    /**
      * Return the current position of the tape's head.
      * @return current value of headPosition.
      */
