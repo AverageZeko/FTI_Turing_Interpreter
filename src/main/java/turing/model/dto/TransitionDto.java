@@ -5,6 +5,7 @@ public class TransitionDto {
     Character read;
     Character write;
     String move;
+	Character target;
     String next;
     String comment;
     
@@ -32,6 +33,12 @@ public class TransitionDto {
 	public void setMove(String move) {
 		this.move = move;
 	}
+	public Character getTarget() {
+		return target;
+	}
+	public void setTarget(Character target) {
+		this.target = target;
+	}
 	public String getNext() {
 		return next;
 	}
@@ -44,6 +51,7 @@ public class TransitionDto {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
 
     
 }
