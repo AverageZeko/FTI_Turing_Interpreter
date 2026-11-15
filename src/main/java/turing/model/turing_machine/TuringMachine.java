@@ -18,6 +18,7 @@ public class TuringMachine {
     private final Map<String, Map<Character, TransitionRule>> transitionTable;
     private Tape tape;
     private String currentState;
+    private int steps;
 
     public String getName() {
         return name;
@@ -111,19 +112,71 @@ public class TuringMachine {
         if (tape == null) {
             printField("Cinta", "(no asignada)");
         } else {
-            printField("Cinta", tape.toString());
-            printField("", " ".repeat(tape.getHeadPosition()) + "^ cabezal (posicion " + tape.getHeadPosition() + ")");
+            printField("Cinta", tapeWithHead() + "   ([ ] = cabezal)");
         }
     }
 
-    private void printCurrentTape() {
-        System.out.println("=== Maquina de Turing: " + name + " ===");
-        if (tape == null) {
-            printField("Cinta", "(no asignada)");
-        } else {
-            printField("Cinta", tape.toString());
-            printField("", " ".repeat(tape.getHeadPosition()) + "^ cabezal (posicion " + tape.getHeadPosition() + ")");
+    /**
+     * Prints the result of the execution: final state, number of steps, final tape,
+     * the remaining counter and every generation stored in the tape, one per row,
+     * so the evolution of the automaton can be read from top to bottom.
+     */
+    public void printResult() {
+        System.out.println();
+        System.out.println("=== Resultado ===");
+        printField("Estado final", currentState);
+        printField("Pasos ejecutados", String.valueOf(steps));
+        printField("Cinta final", tapeWithHead());
+
+        String[] blocks = tape.toString().split("#");
+        // blocks: [Δ, K, G0, G1, ..., Gt, Δ]
+        if (blocks.length > 1) {
+            printField("Contador K", blocks[1]);
         }
+        int generation = 0;
+        for (int i = 2; i < blocks.length; i++) {
+            String cells = blocks[i];
+            if (cells.matches("[01]+")) {
+                printField("G" + generation, cells + "   " + cells.replace('0', '·').replace('1', '█'));
+                generation++;
+            }
+        }
+    }
+
+    private static final String STEP_FORMAT = "%6s | %-15s | %-3s | %-7s | %-9s | %-15s | %s%n";
+
+    private static void printStepHeader() {
+        System.out.println();
+        System.out.printf(STEP_FORMAT, "Paso", "Estado", "Lee", "Escribe", "Operacion", "Siguiente", "Cinta (despues del paso)");
+        System.out.println("-".repeat(100));
+    }
+
+    /**
+     * Prints one step of the execution as a single row: δ(state, read) = (next, written, operation),
+     * followed by the tape after the step with the head's cell between brackets.
+     */
+    private void printStep(String state, Character read, TransitionRule rule) {
+        System.out.printf(STEP_FORMAT, steps, state, read, rule.getWriteSymbol(), formatOperation(rule),
+                rule.getNextState(), tapeWithHead());
+    }
+
+    /**
+     * Formats the move of a rule, adding the target symbol for the macros, e.g. "R* (Δ)".
+     */
+    private static String formatOperation(TransitionRule rule) {
+        if (rule.getTargetSymbol() == null) {
+            return rule.getDirection();
+        }
+        return rule.getDirection() + " (" + rule.getTargetSymbol() + ")";
+    }
+
+    /**
+     * Returns the tape as a string with the cell under the head between brackets, e.g. Δ#10[0]#0001#Δ
+     */
+    private String tapeWithHead() {
+        String content = tape.toString();
+        int head = tape.getHeadPosition();
+        return content.substring(0, head) + "[" + content.charAt(head) + "]" + content.substring(head + 1);
     }
 
     /**
@@ -148,6 +201,8 @@ public class TuringMachine {
      * Execute the turing machine based on its map of transitions
      */
     public void run() {
+        steps = 0;
+        printStepHeader();
         while (!haltStates.contains(currentState)) {
 
             Character symbol = tape.read();
@@ -162,6 +217,7 @@ public class TuringMachine {
                 throw new IllegalStateException("No se encontro una transicion para δ(" + currentState + ", " + symbol
                         + ") en la posicion " + tape.getHeadPosition() + ": " + tape);
             }
+            String previousState = currentState;
             tape.write(currentRule.getWriteSymbol());
 
             switch (currentRule.getDirection()) {
@@ -174,6 +230,9 @@ public class TuringMachine {
                 case "L*":
                     tape.moveLeftUntil(currentRule.getTargetSymbol());
                     break;
+                case "SL":
+                    tape.shiftLeft();
+                    break;
                 case "R":
                     tape.moveRight();
                     break;
@@ -183,6 +242,9 @@ public class TuringMachine {
                 case "R*":
                     tape.moveRightUntil(currentRule.getTargetSymbol());
                     break;
+                case "SR":
+                    tape.shiftRight();
+                    break;
                 case "S":
                     break;
                 default:
@@ -190,7 +252,9 @@ public class TuringMachine {
             }
 
             currentState = currentRule.getNextState();
+            steps++;
+            printStep(previousState, symbol, currentRule);
         }
-        printCurrentTape();
+
     }
 }

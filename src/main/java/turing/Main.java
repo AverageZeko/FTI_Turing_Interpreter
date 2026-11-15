@@ -10,7 +10,7 @@ import turing.model.turing_machine.TuringMachine;
 public class Main {
     public static void main(String[] args) {
         Scanner aScanner = new Scanner(System.in);
-        MachineDefinition machineDefinition = JsonHelper.fetchMachineFromResource("rule_110_traza");
+        MachineDefinition machineDefinition = JsonHelper.fetchMachineFromResource("rule_110_trace");
         TuringMachine aTuringMachine = new TuringMachine(machineDefinition);
 
         System.out.println("\n=== 1. REGLA 110 ===");
@@ -21,6 +21,7 @@ public class Main {
         aTuringMachine.setTape(word, iterations);
         aTuringMachine.printInitialData();
         aTuringMachine.run();
+        aTuringMachine.printResult();
 
         aScanner.close();
         System.out.println("\nPrograma finalizado.");

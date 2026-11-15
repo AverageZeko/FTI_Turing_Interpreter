@@ -22,7 +22,7 @@ public class JsonHelper {
 
     /**
      * Loads a machine definition stored in src/main/resources/rules.
-     * @param machineName the file name, with or without the ".json" extension (e.g. "b_rule_110")
+     * @param machineName the file name without the ".json" sufix (e.g. "b_rule_110")
      * @return the machine definition described by the file
      */
     public static MachineDefinition fetchMachineFromResource(String machineName) {

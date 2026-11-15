@@ -19,11 +19,11 @@ public class TransitionRule {
     /**
      * The operation to be made by the machine's tape
      * <p> L   : Move left
-     * <p> L*  : Move leftuntil coming across the symbol written
-     * <p> L¬* : Move left while coming across the symbol written
+     * <p> L*  : Move left until coming across the target symbol
+     * <p> L¬* : Move left while coming across the target symbol
      * <p> R   : Move right
-     * <p> R*  : Move right until coming across the symbol written
-     * <p> R¬* : Move right while coming across the symbol written
+     * <p> R*  : Move right until coming across the target symbol
+     * <p> R¬* : Move right while coming across the target symbol
      * <p> S   : Stay
      */
     private final String direction;
