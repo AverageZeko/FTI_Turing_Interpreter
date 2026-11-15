@@ -2,8 +2,8 @@ package turing.model.dto;
 
 public class JsonDto {
     String state;
-    String read;
-    String write;
+    Character read;
+    Character write;
     String move;
     String next;
     String comment;
@@ -14,16 +14,16 @@ public class JsonDto {
 	public void setState(String state) {
 		this.state = state;
 	}
-	public String getRead() {
+	public Character getRead() {
 		return read;
 	}
-	public void setRead(String read) {
+	public void setRead(Character read) {
 		this.read = read;
 	}
-	public String getWrite() {
+	public Character getWrite() {
 		return write;
 	}
-	public void setWrite(String write) {
+	public void setWrite(Character write) {
 		this.write = write;
 	}
 	public String getMove() {
