@@ -2,8 +2,15 @@ package turing.model.turing_machine;
 
 // Transition rule class to store a single transition
 public class TransitionRule {
-    String nextState;  // The next state to go to
-    char writeSymbol; // The symbol to be written
+    /**
+     * The state to go after writting
+     */
+    String nextState;
+
+    /**
+     * The symbol to be written
+     */
+    Character writeSymbol;
     
     /**
      * The operation to be made by the machine's tape
@@ -17,7 +24,7 @@ public class TransitionRule {
      */
     String direction;
  
-    public TransitionRule(String nextState, char writeSymbol, String direction) {
+    public TransitionRule(String nextState, Character writeSymbol, String direction) {
         this.nextState = nextState;
         this.writeSymbol = writeSymbol;
         this.direction = direction;
