@@ -1,6 +1,6 @@
 package turing.model.dto;
 
-public class JsonDto {
+public class TransitionDto {
     String state;
     Character read;
     Character write;

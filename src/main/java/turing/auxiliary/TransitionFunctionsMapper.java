@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import turing.model.data.MachineDefinition;
-import turing.model.dto.JsonDto;
+import turing.model.dto.TransitionDto;
 import turing.model.turing_machine.TransitionRule;
 
 public class TransitionFunctionsMapper {
@@ -22,7 +22,7 @@ public class TransitionFunctionsMapper {
     public static Map<String, Map<Character, TransitionRule>> mapTransitionFunction(MachineDefinition aMachineDefinition) {
         Map<String, Map<Character, TransitionRule>> result = new HashMap<>();
 
-        for (JsonDto currentData : aMachineDefinition.getTransitions()) {
+        for (TransitionDto currentData : aMachineDefinition.getTransitions()) {
             Character characterRead = currentData.getRead();
             TransitionRule aTransitionRule = new TransitionRule(
                     currentData.getNext(), currentData.getWrite(), currentData.getMove());

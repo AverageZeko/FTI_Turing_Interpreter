@@ -3,7 +3,7 @@ package turing.model.data;
 import java.util.List;
 import java.util.Set;
 
-import turing.model.dto.JsonDto;
+import turing.model.dto.TransitionDto;
 
 public class MachineDefinition {
     String name;
@@ -12,7 +12,7 @@ public class MachineDefinition {
 	Set<String> states;
 	String initialState;
     Set<String> haltStates;
-    List<JsonDto> transitions;
+    List<TransitionDto> transitions;
 
 	public String getName() {
 		return name;
@@ -50,10 +50,10 @@ public class MachineDefinition {
 	public void setHaltStates(Set<String> haltStates) {
 		this.haltStates = haltStates;
 	}
-	public List<JsonDto> getTransitions() {
+	public List<TransitionDto> getTransitions() {
 		return transitions;
 	}
-	public void setTransitions(List<JsonDto> transitions) {
+	public void setTransitions(List<TransitionDto> transitions) {
 		this.transitions = transitions;
 	}
 
