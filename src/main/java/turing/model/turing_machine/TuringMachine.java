@@ -20,6 +20,10 @@ public class TuringMachine {
     private String currentState;
     private int steps;
 
+    public int getSteps() {
+        return steps;
+    }
+
     public String getName() {
         return name;
     }
