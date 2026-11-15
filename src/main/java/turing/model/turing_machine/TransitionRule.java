@@ -13,6 +13,10 @@ public class TransitionRule {
     Character writeSymbol;
     
     /**
+     * The symbol to be used for (L*, R*, L¬*, R¬*) operations
+     */
+    Character targetSymbol;
+    /**
      * The operation to be made by the machine's tape
      * <p> L   : Move left
      * <p> L*  : Move leftuntil coming across the symbol written
@@ -24,9 +28,10 @@ public class TransitionRule {
      */
     String direction;
  
-    public TransitionRule(String nextState, Character writeSymbol, String direction) {
+    public TransitionRule(String nextState, Character writeSymbol, Character targetSymbol, String direction) {
         this.nextState = nextState;
         this.writeSymbol = writeSymbol;
+        this.targetSymbol = targetSymbol;
         this.direction = direction;
     }
 }
