@@ -19,8 +19,53 @@ public class TuringMachine {
     private Tape tape;
     private String currentState;
 
+    public String getName() {
+        return name;
+    }
+
+    public Set<String> getAlphabet() {
+        return alphabet;
+    }
+
+    public String getEmptySpace() {
+        return emptySpace;
+    }
+
+    public Set<String> getStates() {
+        return states;
+    }
+
+    public String getInitialState() {
+        return initialState;
+    }
+
+    public Set<String> getHaltStates() {
+        return haltStates;
+    }
+
+    public Map<String, Map<Character, TransitionRule>> getTransitionTable() {
+        return transitionTable;
+    }
+
+    public Tape getTape() {
+        return tape;
+    }
+
+    public void setTape(Tape tape) {
+        this.tape = tape;
+    }
+
+    public String getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+
     /**
      * Constructor for a turing machine
+     * 
      * @param aMachineDefinition the object containing the machine's data
      */
     public TuringMachine(MachineDefinition aMachineDefinition) {
@@ -34,11 +79,14 @@ public class TuringMachine {
         this.currentState = aMachineDefinition.getInitialState();
         this.transitionTable = TransitionFunctionsMapper.mapTransitionFunction(aMachineDefinition);
     }
- 
+
     /**
      * Constructs the tape which will be processed by the machine
-     * @param word a binary sequence which represents the word to be processed by the machine
-     * @param iterations a binary number which represents how many iterations the machine will have
+     * 
+     * @param word       a binary sequence which represents the word to be processed
+     *                   by the machine
+     * @param iterations a binary number which represents how many iterations the
+     *                   machine will have
      */
     public void setTape(String word, String iterations) {
         if (word.length() < 8) {
@@ -49,13 +97,14 @@ public class TuringMachine {
     }
 
     /**
-     * Prints the machine's definition (name, alphabet, states, initial state and halt states)
+     * Prints the machine's definition (name, alphabet, states, initial state and
+     * halt states)
      * and the tape, with a mark under the cell where the head is.
      */
     public void printInitialData() {
         System.out.println("=== Maquina de Turing: " + name + " ===");
         printField("Alfabeto", formatSet(alphabet));
-        printField("Espacio vacio", "{"+emptySpace+"}");
+        printField("Espacio vacio", "{" + emptySpace + "}");
         printField("Estados (" + (states == null ? 0 : states.size()) + ")", formatSet(states));
         printField("Estado inicial", initialState);
         printField("Estados de parada", formatSet(haltStates));
@@ -78,7 +127,8 @@ public class TuringMachine {
     }
 
     /**
-     * Prints a line with the label aligned to a fixed width, so all the values start in the same column.
+     * Prints a line with the label aligned to a fixed width, so all the values
+     * start in the same column.
      */
     private static void printField(String label, String value) {
         System.out.printf("%-20s%s%n", label.isEmpty() ? "" : label + ":", value);
@@ -105,7 +155,7 @@ public class TuringMachine {
             TransitionRule currentRule;
             if (rules != null) {
                 currentRule = rules.get(symbol);
-            }   else {
+            } else {
                 currentRule = null;
             }
             if (currentRule == null) {
@@ -135,7 +185,7 @@ public class TuringMachine {
                     break;
                 case "S":
                     break;
-                default: 
+                default:
                     throw new IllegalStateException("Operacion no implementada: " + currentRule.getDirection());
             }
 
