@@ -1,0 +1,135 @@
+{
+  "name": "Regla 110 - Sin traza",
+  "alphabet": ["0", "1", "#", "X", "Y", "Δ"],
+  "emptySpace": "Δ",
+  "states": [
+    "q_start", "check_k", "k_nonzero", "dec", "goto_end", "at_end", "read_last",
+    "seek_start_L0", "seek_start_L1", "at_c_L0", "at_c_L1",
+    "lc_00", "lc_01", "lc_10", "lc_11", "wrap_00", "wrap_01", "wrap_10", "wrap_11",
+    "carry_0", "carry_1", "back_old",
+    "end_gen", "restore_start", "restore",
+    "clean_tape", "cl_check_more", "cl_to_end", "cl_last_close", "cl_last_open", "cl_pick",
+    "cl_carry_0", "cl_carry_1", "cl_kopen_0", "cl_kopen_1", "cl_kclose_0", "cl_kclose_1",
+    "cl_slot_0", "cl_slot_1", "cl_rewind", "cl_e_kopen", "cl_e_kclose", "cl_e_g0close",
+    "cl_erase", "cl_g0_close", "cl_unmark", "HALT"
+  ],
+  "initialState": "q_start",
+  "haltStates": ["HALT"],
+  "transitions": [
+    { "state": "q_start", "read": "Δ", "write": "Δ", "move": "R", "next": "q_start", "comment": "Start: skip the blanks before the tape content" },
+    { "state": "q_start", "read": "#", "write": "#", "move": "R", "next": "check_k", "comment": "Start: first # found, head on the first bit of K" },
+
+    { "state": "check_k", "read": "0", "write": "0", "move": "R¬*", "target": "0", "next": "check_k", "comment": "Counter check: skip the 0s of K (macro: move right while 0)" },
+    { "state": "check_k", "read": "1", "write": "1", "move": "R*", "target": "#", "next": "k_nonzero", "comment": "Counter check: K has a 1, so K > 0. Go to the end of K (macro: move right until #)" },
+    { "state": "check_k", "read": "#", "write": "#", "move": "R*", "target": "#", "next": "clean_tape", "comment": "Counter check: K has only 0s, so K = 0. Go to the # closing gen 0 to clean the tape (macro: move right until #)" },
+
+    { "state": "clean_tape", "read": "#", "write": "#", "move": "R", "next": "cl_check_more", "comment": "Clean: check if there is a generation after gen 0" },
+    { "state": "cl_check_more", "read": "Δ", "write": "Δ", "move": "S", "next": "HALT", "comment": "Clean: gen 0 is the last generation, nothing to clean" },
+    { "state": "cl_check_more", "read": "0", "write": "0", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: there are more generations, go to the end of the tape (macro: move right until Δ)" },
+    { "state": "cl_check_more", "read": "1", "write": "1", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: there are more generations, go to the end of the tape (macro: move right until Δ)" },
+
+    { "state": "cl_to_end", "read": "Δ", "write": "Δ", "move": "L", "next": "cl_last_close", "comment": "Clean: end found, head on the # closing the last generation" },
+    { "state": "cl_last_close", "read": "#", "write": "#", "move": "L*", "target": "#", "next": "cl_last_open", "comment": "Clean: go to the # opening the last generation (macro: move left until #)" },
+    { "state": "cl_last_open", "read": "#", "write": "#", "move": "R", "next": "cl_pick", "comment": "Clean: head on the first cell of the last generation" },
+
+    { "state": "cl_pick", "read": "X", "write": "X", "move": "R", "next": "cl_pick", "comment": "Clean: skip the cells of the last generation already copied" },
+    { "state": "cl_pick", "read": "Y", "write": "Y", "move": "R", "next": "cl_pick", "comment": "Clean: skip the cells of the last generation already copied" },
+    { "state": "cl_pick", "read": "0", "write": "X", "move": "L*", "target": "Δ", "next": "cl_carry_0", "comment": "Clean: mark this 0 as copied and carry it to the start of the tape (macro: move left until Δ)" },
+    { "state": "cl_pick", "read": "1", "write": "Y", "move": "L*", "target": "Δ", "next": "cl_carry_1", "comment": "Clean: mark this 1 as copied and carry it to the start of the tape (macro: move left until Δ)" },
+    { "state": "cl_pick", "read": "#", "write": "#", "move": "L*", "target": "Δ", "next": "cl_rewind", "comment": "Clean: the whole last generation was copied into gen 0, go to the start of the tape (macro: move left until Δ)" },
+
+    { "state": "cl_carry_0", "read": "Δ", "write": "Δ", "move": "R", "next": "cl_kopen_0", "comment": "Clean: start found, head on the # opening K" },
+    { "state": "cl_carry_1", "read": "Δ", "write": "Δ", "move": "R", "next": "cl_kopen_1", "comment": "Clean: start found, head on the # opening K" },
+    { "state": "cl_kopen_0", "read": "#", "write": "#", "move": "R*", "target": "#", "next": "cl_kclose_0", "comment": "Clean: skip K (macro: move right until #)" },
+    { "state": "cl_kopen_1", "read": "#", "write": "#", "move": "R*", "target": "#", "next": "cl_kclose_1", "comment": "Clean: skip K (macro: move right until #)" },
+    { "state": "cl_kclose_0", "read": "#", "write": "#", "move": "R", "next": "cl_slot_0", "comment": "Clean: head on the first cell of gen 0" },
+    { "state": "cl_kclose_1", "read": "#", "write": "#", "move": "R", "next": "cl_slot_1", "comment": "Clean: head on the first cell of gen 0" },
+    { "state": "cl_slot_0", "read": "X", "write": "X", "move": "R", "next": "cl_slot_0", "comment": "Clean: skip the cells of gen 0 already overwritten" },
+    { "state": "cl_slot_0", "read": "Y", "write": "Y", "move": "R", "next": "cl_slot_0", "comment": "Clean: skip the cells of gen 0 already overwritten" },
+    { "state": "cl_slot_0", "read": "0", "write": "X", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: overwrite this cell of gen 0 with the carried 0 (marked as X), go back to the end (macro: move right until Δ)" },
+    { "state": "cl_slot_0", "read": "1", "write": "X", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: overwrite this cell of gen 0 with the carried 0 (marked as X), go back to the end (macro: move right until Δ)" },
+    { "state": "cl_slot_1", "read": "X", "write": "X", "move": "R", "next": "cl_slot_1", "comment": "Clean: skip the cells of gen 0 already overwritten" },
+    { "state": "cl_slot_1", "read": "Y", "write": "Y", "move": "R", "next": "cl_slot_1", "comment": "Clean: skip the cells of gen 0 already overwritten" },
+    { "state": "cl_slot_1", "read": "0", "write": "Y", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: overwrite this cell of gen 0 with the carried 1 (marked as Y), go back to the end (macro: move right until Δ)" },
+    { "state": "cl_slot_1", "read": "1", "write": "Y", "move": "R*", "target": "Δ", "next": "cl_to_end", "comment": "Clean: overwrite this cell of gen 0 with the carried 1 (marked as Y), go back to the end (macro: move right until Δ)" },
+
+    { "state": "cl_rewind", "read": "Δ", "write": "Δ", "move": "R", "next": "cl_e_kopen", "comment": "Clean: start found, head on the # opening K" },
+    { "state": "cl_e_kopen", "read": "#", "write": "#", "move": "R*", "target": "#", "next": "cl_e_kclose", "comment": "Clean: skip K (macro: move right until #)" },
+    { "state": "cl_e_kclose", "read": "#", "write": "#", "move": "R*", "target": "#", "next": "cl_e_g0close", "comment": "Clean: skip gen 0, which now holds the last generation (macro: move right until #)" },
+    { "state": "cl_e_g0close", "read": "#", "write": "#", "move": "R", "next": "cl_erase", "comment": "Clean: everything after this # must be erased" },
+
+    { "state": "cl_erase", "read": "0", "write": "Δ", "move": "R", "next": "cl_erase", "comment": "Clean: erase the old generations" },
+    { "state": "cl_erase", "read": "1", "write": "Δ", "move": "R", "next": "cl_erase", "comment": "Clean: erase the old generations" },
+    { "state": "cl_erase", "read": "X", "write": "Δ", "move": "R", "next": "cl_erase", "comment": "Clean: erase the old generations" },
+    { "state": "cl_erase", "read": "Y", "write": "Δ", "move": "R", "next": "cl_erase", "comment": "Clean: erase the old generations" },
+    { "state": "cl_erase", "read": "#", "write": "Δ", "move": "R", "next": "cl_erase", "comment": "Clean: erase the old generations" },
+    { "state": "cl_erase", "read": "Δ", "write": "Δ", "move": "L¬*", "target": "Δ", "next": "cl_g0_close", "comment": "Clean: everything erased, go back to the # closing gen 0 (macro: move left while Δ)" },
+
+    { "state": "cl_g0_close", "read": "#", "write": "#", "move": "L", "next": "cl_unmark", "comment": "Clean: go to the last cell of gen 0" },
+    { "state": "cl_unmark", "read": "X", "write": "0", "move": "L", "next": "cl_unmark", "comment": "Clean: unmark the copied 0" },
+    { "state": "cl_unmark", "read": "Y", "write": "1", "move": "L", "next": "cl_unmark", "comment": "Clean: unmark the copied 1" },
+    { "state": "cl_unmark", "read": "#", "write": "#", "move": "S", "next": "HALT", "comment": "Clean: tape holds only K and the last generation. Halt" },
+
+    { "state": "k_nonzero", "read": "#", "write": "#", "move": "L", "next": "dec", "comment": "End of K found, head on its least significant bit" },
+
+    { "state": "dec", "read": "0", "write": "1", "move": "L", "next": "dec", "comment": "Decrement K: 0 - 1 = 1 with borrow, keep going left" },
+    { "state": "dec", "read": "1", "write": "0", "move": "R*", "target": "Δ", "next": "goto_end", "comment": "Decrement K: 1 - 1 = 0, no borrow. Go to the end of the tape (macro: move right until Δ)" },
+
+    { "state": "goto_end", "read": "Δ", "write": "Δ", "move": "L", "next": "at_end", "comment": "End found, head on the # closing the last generation (gen t)" },
+    { "state": "at_end", "read": "#", "write": "#", "move": "L", "next": "read_last", "comment": "Left boundary: go to the last cell of gen t" },
+
+    { "state": "read_last", "read": "0", "write": "0", "move": "L*", "target": "#", "next": "seek_start_L0", "comment": "Left boundary: last cell = 0 is the left neighbour of cell 0 (cyclic). Go to the start of gen t (macro: move left until #)" },
+    { "state": "read_last", "read": "1", "write": "1", "move": "L*", "target": "#", "next": "seek_start_L1", "comment": "Left boundary: last cell = 1 is the left neighbour of cell 0 (cyclic). Go to the start of gen t (macro: move left until #)" },
+    { "state": "seek_start_L0", "read": "#", "write": "#", "move": "R", "next": "at_c_L0", "comment": "Head on cell 0 with L = 0" },
+    { "state": "seek_start_L1", "read": "#", "write": "#", "move": "R", "next": "at_c_L1", "comment": "Head on cell 0 with L = 1" },
+
+    { "state": "at_c_L0", "read": "0", "write": "X", "move": "R", "next": "lc_00", "comment": "Mark centre C = 0 as processed (X), L = 0" },
+    { "state": "at_c_L0", "read": "1", "write": "Y", "move": "R", "next": "lc_01", "comment": "Mark centre C = 1 as processed (Y), L = 0" },
+    { "state": "at_c_L0", "read": "#", "write": "#", "move": "R*", "target": "Δ", "next": "end_gen", "comment": "No cells left in gen t, go to the end of the new generation (macro: move right until Δ)" },
+    { "state": "at_c_L1", "read": "0", "write": "X", "move": "R", "next": "lc_10", "comment": "Mark centre C = 0 as processed (X), L = 1" },
+    { "state": "at_c_L1", "read": "1", "write": "Y", "move": "R", "next": "lc_11", "comment": "Mark centre C = 1 as processed (Y), L = 1" },
+    { "state": "at_c_L1", "read": "#", "write": "#", "move": "R*", "target": "Δ", "next": "end_gen", "comment": "No cells left in gen t, go to the end of the new generation (macro: move right until Δ)" },
+
+    { "state": "lc_11", "read": "1", "write": "1", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110: 111 -> 0. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_11", "read": "0", "write": "0", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110: 110 -> 1. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_10", "read": "1", "write": "1", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110: 101 -> 1. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_10", "read": "0", "write": "0", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110: 100 -> 0. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_01", "read": "1", "write": "1", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110: 011 -> 1. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_01", "read": "0", "write": "0", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110: 010 -> 1. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_00", "read": "1", "write": "1", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110: 001 -> 1. Carry it to the end of the new generation (macro: move right until Δ)" },
+    { "state": "lc_00", "read": "0", "write": "0", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110: 000 -> 0. Carry it to the end of the new generation (macro: move right until Δ)" },
+
+    { "state": "lc_11", "read": "#", "write": "#", "move": "L*", "target": "#", "next": "wrap_11", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_10", "read": "#", "write": "#", "move": "L*", "target": "#", "next": "wrap_10", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_01", "read": "#", "write": "#", "move": "L*", "target": "#", "next": "wrap_01", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_00", "read": "#", "write": "#", "move": "L*", "target": "#", "next": "wrap_00", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "wrap_11", "read": "#", "write": "#", "move": "R", "next": "lc_11", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_10", "read": "#", "write": "#", "move": "R", "next": "lc_10", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_01", "read": "#", "write": "#", "move": "R", "next": "lc_01", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_00", "read": "#", "write": "#", "move": "R", "next": "lc_00", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+
+    { "state": "lc_11", "read": "Y", "write": "Y", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 111 -> 0 (macro: move right until Δ)" },
+    { "state": "lc_11", "read": "X", "write": "X", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 110 -> 1 (macro: move right until Δ)" },
+    { "state": "lc_10", "read": "Y", "write": "Y", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 101 -> 1 (macro: move right until Δ)" },
+    { "state": "lc_10", "read": "X", "write": "X", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 100 -> 0 (macro: move right until Δ)" },
+    { "state": "lc_01", "read": "Y", "write": "Y", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 011 -> 1 (macro: move right until Δ)" },
+    { "state": "lc_01", "read": "X", "write": "X", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 010 -> 1 (macro: move right until Δ)" },
+    { "state": "lc_00", "read": "Y", "write": "Y", "move": "R*", "target": "Δ", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 001 -> 1 (macro: move right until Δ)" },
+    { "state": "lc_00", "read": "X", "write": "X", "move": "R*", "target": "Δ", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 000 -> 0 (macro: move right until Δ)" },
+
+    { "state": "carry_0", "read": "Δ", "write": "0", "move": "L*", "target": "#", "next": "back_old", "comment": "Write the new cell = 0, go back to the separator before the new generation (macro: move left until #)" },
+    { "state": "carry_1", "read": "Δ", "write": "1", "move": "L*", "target": "#", "next": "back_old", "comment": "Write the new cell = 1, go back to the separator before the new generation (macro: move left until #)" },
+
+    { "state": "back_old", "read": "#", "write": "#", "move": "L", "next": "back_old", "comment": "Cross the separator, now inside gen t" },
+    { "state": "back_old", "read": "0", "write": "0", "move": "L", "next": "back_old", "comment": "Skip the unprocessed cells of gen t" },
+    { "state": "back_old", "read": "1", "write": "1", "move": "L", "next": "back_old", "comment": "Skip the unprocessed cells of gen t" },
+    { "state": "back_old", "read": "X", "write": "X", "move": "R", "next": "at_c_L0", "comment": "Last processed cell = 0 is the left neighbour of the next centre" },
+    { "state": "back_old", "read": "Y", "write": "Y", "move": "R", "next": "at_c_L1", "comment": "Last processed cell = 1 is the left neighbour of the next centre" },
+
+    { "state": "end_gen", "read": "Δ", "write": "#", "move": "L*", "target": "#", "next": "restore_start", "comment": "Close the new generation with #, go back to its opening # (macro: move left until #)" },
+    { "state": "restore_start", "read": "#", "write": "#", "move": "L", "next": "restore", "comment": "Go to the last cell of gen t to restore it" },
+    { "state": "restore", "read": "X", "write": "0", "move": "L", "next": "restore", "comment": "Restore processed 0 so gen t stays recorded on the tape" },
+    { "state": "restore", "read": "Y", "write": "1", "move": "L", "next": "restore", "comment": "Restore processed 1 so gen t stays recorded on the tape" },
+    { "state": "restore", "read": "#", "write": "#", "move": "L*", "target": "Δ", "next": "q_start", "comment": "Gen t restored, go back to the start of the tape to check the counter again (macro: move left until Δ)" }
+  ]
+}
