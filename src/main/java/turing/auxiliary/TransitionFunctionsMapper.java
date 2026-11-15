@@ -25,7 +25,7 @@ public class TransitionFunctionsMapper {
         for (TransitionDto currentData : aMachineDefinition.getTransitions()) {
             Character characterRead = currentData.getRead();
             TransitionRule aTransitionRule = new TransitionRule(
-                    currentData.getNext(), currentData.getWrite(), currentData.getMove());
+                    currentData.getNext(), currentData.getWrite(), currentData.getTarget(), currentData.getMove());
 
             Map<Character, TransitionRule> stateRules = result.computeIfAbsent(currentData.getState(), state -> new HashMap<>());
             if (stateRules.containsKey(characterRead)) {
