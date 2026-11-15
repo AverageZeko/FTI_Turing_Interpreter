@@ -13,16 +13,14 @@ public class Main {
         MachineDefinition machineDefinition = JsonHelper.fetchMachineFromResource("rule_110");
         TuringMachine aTuringMachine = new TuringMachine(machineDefinition);
 
-        System.out.println("Regla 110\nEscriba su cadena binaria a analizar (8 simbolos minimo)");
+        System.out.println("\n=== 1. REGLA 110 ===");
+        System.out.println("Escriba su cadena binaria a analizar (8 simbolos minimo)");
         String word = aScanner.nextLine();
-        System.out.println("Escriba el numero de repeticiones");
+        System.out.println("Escriba el numero binario de repeticiones");
         String iterations = aScanner.nextLine();
         aTuringMachine.setTape(word, iterations);
         aTuringMachine.printInitialData();
         aTuringMachine.run();
-
-
-        System.out.println("\n=== 1. REGLA 110 ===");
 
         aScanner.close();
         System.out.println("\nPrograma finalizado.");
