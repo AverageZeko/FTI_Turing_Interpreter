@@ -112,34 +112,34 @@ public class TuringMachine {
                 throw new IllegalStateException("No se encontro una transicion para δ(" + currentState + ", " + symbol
                         + ") en la posicion " + tape.getHeadPosition() + ": " + tape);
             }
-            tape.write(currentRule.writeSymbol);
+            tape.write(currentRule.getWriteSymbol());
 
-            switch (currentRule.direction) {
+            switch (currentRule.getDirection()) {
                 case "L":
                     tape.moveLeft();
                     break;
                 case "L¬*":
-                    tape.moveLeftWhile(currentRule.writeSymbol);
+                    tape.moveLeftWhile(currentRule.getTargetSymbol());
                     break;
                 case "L*":
-                    tape.moveLeftUntil(currentRule.writeSymbol);
+                    tape.moveLeftUntil(currentRule.getTargetSymbol());
                     break;
                 case "R":
                     tape.moveRight();
                     break;
                 case "R¬*":
-                    tape.moveRightWhile(currentRule.writeSymbol);
+                    tape.moveRightWhile(currentRule.getTargetSymbol());
                     break;
                 case "R*":
-                    tape.moveRightUntil(currentRule.writeSymbol);
+                    tape.moveRightUntil(currentRule.getTargetSymbol());
                     break;
                 case "S":
                     break;
                 default: 
-                    throw new IllegalStateException("Operacion no implementada: " + currentRule.direction);
+                    throw new IllegalStateException("Operacion no implementada: " + currentRule.getDirection());
             }
 
-            currentState = currentRule.nextState;
+            currentState = currentRule.getNextState();
         }
         printCurrentTape();
     }
