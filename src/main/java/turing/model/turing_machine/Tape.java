@@ -61,9 +61,11 @@ public class Tape {
      * If the head is on the first cell, a blank is inserted at the beginning of the tape.
      */
     public void moveLeft() {
-        headPosition--;
+
         if (headPosition == 0) {
             tape.addFirst(EMPTY_SPACE);
+        }   else {
+            headPosition--;
         }
     }
 
