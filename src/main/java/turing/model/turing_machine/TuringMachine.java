@@ -4,28 +4,35 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import turing.auxiliary.TransitionFunctionsMapper;
+import turing.model.data.MachineDefinition;
+
 // Turing machine class
 public class TuringMachine {
-    private String name;
-    private Set<String> alphabet;
-    private String emptySpace;
-    private Set<String> states;
-    private String initialState;
+    private final String name;
+    private final Set<String> alphabet;
+    private final String emptySpace;
+    private final Set<String> states;
+    private final String initialState;
     private final Set<String> haltStates;
     private final Map<String, Map<Character, TransitionRule>> transitionTable;
     private Tape tape;
     private String currentState;
 
-    public TuringMachine(String name, Set<String> alphabet, String emptySpace, Set<String> states, String initialState,
-                 Set<String> haltStates, Map<String, Map<Character, TransitionRule>> transitionTable) {
-        this.name = name;
-        this.alphabet = alphabet;
-        this.emptySpace = emptySpace;
-        this.states = states;
-        this.initialState = initialState;
-        this.currentState = initialState;
-        this.haltStates = haltStates;
-        this.transitionTable = transitionTable;
+    /**
+     * Constructor for a turing machine
+     * @param aMachineDefinition the object containing the machine's data
+     */
+    public TuringMachine(MachineDefinition aMachineDefinition) {
+        this.name = aMachineDefinition.getName();
+        this.alphabet = aMachineDefinition.getAlphabet();
+        this.emptySpace = aMachineDefinition.getEmptySpace();
+        this.states = aMachineDefinition.getStates();
+        this.initialState = aMachineDefinition.getInitialState();
+        this.haltStates = aMachineDefinition.getHaltStates();
+
+        this.currentState = aMachineDefinition.getInitialState();
+        this.transitionTable = TransitionFunctionsMapper.mapTransitionFunction(aMachineDefinition);
     }
  
     /**
