@@ -8,10 +8,10 @@ import turing.model.dto.JsonDto;
 public class MachineDefinition {
     String name;
     String emptySpace;
-    List<String> alphabet;
+    Set<String> alphabet;
 	Set<String> states;
 	String initialState;
-    List<String> haltStates;
+    Set<String> haltStates;
     List<JsonDto> transitions;
 
 	public String getName() {
@@ -38,16 +38,16 @@ public class MachineDefinition {
 	public void setInitialState(String initialState) {
 		this.initialState = initialState;
 	}
-	public List<String> getAlphabet() {
+	public Set<String> getAlphabet() {
 		return alphabet;
 	}
-	public void setAlphabet(List<String> alphabet) {
+	public void setAlphabet(Set<String> alphabet) {
 		this.alphabet = alphabet;
 	}
-	public List<String> getHaltStates() {
+	public Set<String> getHaltStates() {
 		return haltStates;
 	}
-	public void setHaltStates(List<String> haltStates) {
+	public void setHaltStates(Set<String> haltStates) {
 		this.haltStates = haltStates;
 	}
 	public List<JsonDto> getTransitions() {
