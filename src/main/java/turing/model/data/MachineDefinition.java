@@ -6,13 +6,13 @@ import java.util.Set;
 import turing.model.dto.TransitionDto;
 
 public class MachineDefinition {
-    String name;
-    String emptySpace;
-    Set<String> alphabet;
-	Set<String> states;
-	String initialState;
-    Set<String> haltStates;
-    List<TransitionDto> transitions;
+    private String name;
+    private String emptySpace;
+    private Set<String> alphabet;
+	private Set<String> states;
+	private String initialState;
+    private Set<String> haltStates;
+    private List<TransitionDto> transitions;
 
 	public String getName() {
 		return name;
