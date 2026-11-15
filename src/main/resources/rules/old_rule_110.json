@@ -1,0 +1,119 @@
+{
+  "name": "Regla 110 - Traza",
+  "alphabet": ["0", "1", "#", "X", "Y", "Δ"],
+  "emptySpace": "Δ",
+  "states": [
+    "q_start", "check_k", "k_nonzero", "dec", "goto_end", "at_end", "read_last",
+    "seek_start_L0", "seek_start_L1", "at_c_L0", "at_c_L1",
+    "lc_00", "lc_01", "lc_10", "lc_11", "wrap_00", "wrap_01", "wrap_10", "wrap_11",
+    "carry_0", "carry_1", "back_new", "back_old",
+    "end_gen", "restore_start", "restore", "rewind", "add_blank", "HALT"
+  ],
+  "initialState": "q_start",
+  "haltStates": ["HALT"],
+  "transitions": [
+    { "state": "q_start", "read": "Δ", "write": "Δ", "move": "R", "next": "q_start", "comment": "Start: skip the blanks before the tape content" },
+    { "state": "q_start", "read": "#", "write": "#", "move": "R", "next": "check_k", "comment": "Start: first # found, head on the first bit of K" },
+
+    { "state": "check_k", "read": "0", "write": "0", "move": "R¬*", "next": "check_k", "comment": "Counter check: skip the 0s of K (macro: move right while 0)" },
+    { "state": "check_k", "read": "1", "write": "1", "move": "R", "next": "k_nonzero", "comment": "Counter check: K has a 1, so K > 0" },
+    { "state": "check_k", "read": "#", "write": "#", "move": "R", "next": "add_blank", "comment": "Counter check: K has only 0s, so K = 0. Go to the end of the tape to finish" },
+
+    { "state": "add_blank", "read": "0", "write": "0", "move": "R", "next": "add_blank", "comment": "Finish: go to the end of the tape content" },
+    { "state": "add_blank", "read": "1", "write": "1", "move": "R", "next": "add_blank", "comment": "Finish: go to the end of the tape content" },
+    { "state": "add_blank", "read": "#", "write": "#", "move": "R", "next": "add_blank", "comment": "Finish: go to the end of the tape content" },
+    { "state": "add_blank", "read": "Δ", "write": "Δ", "move": "S", "next": "HALT", "comment": "Finish: write a blank after the last generation and halt" },
+
+    { "state": "k_nonzero", "read": "0", "write": "0", "move": "R", "next": "k_nonzero", "comment": "Go to the end of K" },
+    { "state": "k_nonzero", "read": "1", "write": "1", "move": "R", "next": "k_nonzero", "comment": "Go to the end of K" },
+    { "state": "k_nonzero", "read": "#", "write": "#", "move": "L", "next": "dec", "comment": "End of K found, head on its least significant bit" },
+
+    { "state": "dec", "read": "0", "write": "1", "move": "L", "next": "dec", "comment": "Decrement K: 0 - 1 = 1 with borrow, keep going left" },
+    { "state": "dec", "read": "1", "write": "0", "move": "R", "next": "goto_end", "comment": "Decrement K: 1 - 1 = 0, no borrow, decrement finished" },
+
+    { "state": "goto_end", "read": "0", "write": "0", "move": "R", "next": "goto_end", "comment": "Go to the end of the tape content" },
+    { "state": "goto_end", "read": "1", "write": "1", "move": "R", "next": "goto_end", "comment": "Go to the end of the tape content" },
+    { "state": "goto_end", "read": "#", "write": "#", "move": "R", "next": "goto_end", "comment": "Go to the end of the tape content" },
+    { "state": "goto_end", "read": "Δ", "write": "Δ", "move": "L", "next": "at_end", "comment": "End found, head on the # closing the last generation (gen t)" },
+
+    { "state": "at_end", "read": "#", "write": "#", "move": "L", "next": "read_last", "comment": "Left boundary: go to the last cell of gen t" },
+
+    { "state": "read_last", "read": "0", "write": "0", "move": "L", "next": "seek_start_L0", "comment": "Left boundary: last cell = 0 is the left neighbour of cell 0 (cyclic)" },
+    { "state": "read_last", "read": "1", "write": "1", "move": "L", "next": "seek_start_L1", "comment": "Left boundary: last cell = 1 is the left neighbour of cell 0 (cyclic)" },
+
+    { "state": "seek_start_L0", "read": "0", "write": "0", "move": "L", "next": "seek_start_L0", "comment": "Go to the start of gen t remembering L = 0" },
+    { "state": "seek_start_L0", "read": "1", "write": "1", "move": "L", "next": "seek_start_L0", "comment": "Go to the start of gen t remembering L = 0" },
+    { "state": "seek_start_L0", "read": "#", "write": "#", "move": "R", "next": "at_c_L0", "comment": "Head on cell 0 with L = 0" },
+    { "state": "seek_start_L1", "read": "0", "write": "0", "move": "L", "next": "seek_start_L1", "comment": "Go to the start of gen t remembering L = 1" },
+    { "state": "seek_start_L1", "read": "1", "write": "1", "move": "L", "next": "seek_start_L1", "comment": "Go to the start of gen t remembering L = 1" },
+    { "state": "seek_start_L1", "read": "#", "write": "#", "move": "R", "next": "at_c_L1", "comment": "Head on cell 0 with L = 1" },
+
+    { "state": "at_c_L0", "read": "0", "write": "X", "move": "R", "next": "lc_00", "comment": "Mark centre C = 0 as processed (X), L = 0" },
+    { "state": "at_c_L0", "read": "1", "write": "Y", "move": "R", "next": "lc_01", "comment": "Mark centre C = 1 as processed (Y), L = 0" },
+    { "state": "at_c_L0", "read": "#", "write": "#", "move": "R", "next": "end_gen", "comment": "No cells left in gen t, the new generation is complete" },
+    { "state": "at_c_L1", "read": "0", "write": "X", "move": "R", "next": "lc_10", "comment": "Mark centre C = 0 as processed (X), L = 1" },
+    { "state": "at_c_L1", "read": "1", "write": "Y", "move": "R", "next": "lc_11", "comment": "Mark centre C = 1 as processed (Y), L = 1" },
+    { "state": "at_c_L1", "read": "#", "write": "#", "move": "R", "next": "end_gen", "comment": "No cells left in gen t, the new generation is complete" },
+
+    { "state": "lc_11", "read": "1", "write": "1", "move": "R", "next": "carry_0", "comment": "Rule 110: 111 -> 0" },
+    { "state": "lc_11", "read": "0", "write": "0", "move": "R", "next": "carry_1", "comment": "Rule 110: 110 -> 1" },
+    { "state": "lc_10", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "Rule 110: 101 -> 1" },
+    { "state": "lc_10", "read": "0", "write": "0", "move": "R", "next": "carry_0", "comment": "Rule 110: 100 -> 0" },
+    { "state": "lc_01", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "Rule 110: 011 -> 1" },
+    { "state": "lc_01", "read": "0", "write": "0", "move": "R", "next": "carry_1", "comment": "Rule 110: 010 -> 1" },
+    { "state": "lc_00", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "Rule 110: 001 -> 1" },
+    { "state": "lc_00", "read": "0", "write": "0", "move": "R", "next": "carry_0", "comment": "Rule 110: 000 -> 0" },
+
+    { "state": "lc_11", "read": "#", "write": "#", "move": "L*", "next": "wrap_11", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_10", "read": "#", "write": "#", "move": "L*", "next": "wrap_10", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_01", "read": "#", "write": "#", "move": "L*", "next": "wrap_01", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "lc_00", "read": "#", "write": "#", "move": "L*", "next": "wrap_00", "comment": "Right boundary: C is the last cell, go to the start of gen t (macro: move left until #)" },
+    { "state": "wrap_11", "read": "#", "write": "#", "move": "R", "next": "lc_11", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_10", "read": "#", "write": "#", "move": "R", "next": "lc_10", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_01", "read": "#", "write": "#", "move": "R", "next": "lc_01", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+    { "state": "wrap_00", "read": "#", "write": "#", "move": "R", "next": "lc_00", "comment": "Right boundary: R is cell 0 (cyclic), already marked" },
+
+    { "state": "lc_11", "read": "Y", "write": "Y", "move": "R", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 111 -> 0" },
+    { "state": "lc_11", "read": "X", "write": "X", "move": "R", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 110 -> 1" },
+    { "state": "lc_10", "read": "Y", "write": "Y", "move": "R", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 101 -> 1" },
+    { "state": "lc_10", "read": "X", "write": "X", "move": "R", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 100 -> 0" },
+    { "state": "lc_01", "read": "Y", "write": "Y", "move": "R", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 011 -> 1" },
+    { "state": "lc_01", "read": "X", "write": "X", "move": "R", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 010 -> 1" },
+    { "state": "lc_00", "read": "Y", "write": "Y", "move": "R", "next": "carry_1", "comment": "Rule 110 (cyclic, R = cell 0 = Y = 1): 001 -> 1" },
+    { "state": "lc_00", "read": "X", "write": "X", "move": "R", "next": "carry_0", "comment": "Rule 110 (cyclic, R = cell 0 = X = 0): 000 -> 0" },
+
+    { "state": "carry_0", "read": "0", "write": "0", "move": "R", "next": "carry_0", "comment": "Carry a 0 to the end of the new generation" },
+    { "state": "carry_0", "read": "1", "write": "1", "move": "R", "next": "carry_0", "comment": "Carry a 0 to the end of the new generation" },
+    { "state": "carry_0", "read": "X", "write": "X", "move": "R", "next": "carry_0", "comment": "Carry a 0 to the end of the new generation" },
+    { "state": "carry_0", "read": "Y", "write": "Y", "move": "R", "next": "carry_0", "comment": "Carry a 0 to the end of the new generation" },
+    { "state": "carry_0", "read": "#", "write": "#", "move": "R", "next": "carry_0", "comment": "Carry a 0 to the end of the new generation" },
+    { "state": "carry_0", "read": "Δ", "write": "0", "move": "L", "next": "back_new", "comment": "Write the new cell = 0" },
+    { "state": "carry_1", "read": "0", "write": "0", "move": "R", "next": "carry_1", "comment": "Carry a 1 to the end of the new generation" },
+    { "state": "carry_1", "read": "1", "write": "1", "move": "R", "next": "carry_1", "comment": "Carry a 1 to the end of the new generation" },
+    { "state": "carry_1", "read": "X", "write": "X", "move": "R", "next": "carry_1", "comment": "Carry a 1 to the end of the new generation" },
+    { "state": "carry_1", "read": "Y", "write": "Y", "move": "R", "next": "carry_1", "comment": "Carry a 1 to the end of the new generation" },
+    { "state": "carry_1", "read": "#", "write": "#", "move": "R", "next": "carry_1", "comment": "Carry a 1 to the end of the new generation" },
+    { "state": "carry_1", "read": "Δ", "write": "1", "move": "L", "next": "back_new", "comment": "Write the new cell = 1" },
+
+    { "state": "back_new", "read": "0", "write": "0", "move": "L", "next": "back_new", "comment": "Go back over the new generation" },
+    { "state": "back_new", "read": "1", "write": "1", "move": "L", "next": "back_new", "comment": "Go back over the new generation" },
+    { "state": "back_new", "read": "#", "write": "#", "move": "L", "next": "back_old", "comment": "Separator found, now inside gen t" },
+    { "state": "back_old", "read": "0", "write": "0", "move": "L", "next": "back_old", "comment": "Skip the unprocessed cells of gen t" },
+    { "state": "back_old", "read": "1", "write": "1", "move": "L", "next": "back_old", "comment": "Skip the unprocessed cells of gen t" },
+    { "state": "back_old", "read": "X", "write": "X", "move": "R", "next": "at_c_L0", "comment": "Last processed cell = 0 is the left neighbour of the next centre" },
+    { "state": "back_old", "read": "Y", "write": "Y", "move": "R", "next": "at_c_L1", "comment": "Last processed cell = 1 is the left neighbour of the next centre" },
+
+    { "state": "end_gen", "read": "0", "write": "0", "move": "R", "next": "end_gen", "comment": "Go to the end of the new generation" },
+    { "state": "end_gen", "read": "1", "write": "1", "move": "R", "next": "end_gen", "comment": "Go to the end of the new generation" },
+    { "state": "end_gen", "read": "Δ", "write": "#", "move": "L*", "next": "restore_start", "comment": "Close the new generation with #, go back to its opening # (macro: move left until #)" },
+    { "state": "restore_start", "read": "#", "write": "#", "move": "L", "next": "restore", "comment": "Go to the last cell of gen t to restore it" },
+    { "state": "restore", "read": "X", "write": "0", "move": "L", "next": "restore", "comment": "Restore processed 0 so gen t stays recorded on the tape" },
+    { "state": "restore", "read": "Y", "write": "1", "move": "L", "next": "restore", "comment": "Restore processed 1 so gen t stays recorded on the tape" },
+    { "state": "restore", "read": "#", "write": "#", "move": "L", "next": "rewind", "comment": "Gen t restored, go back to the counter" },
+
+    { "state": "rewind", "read": "0", "write": "0", "move": "L", "next": "rewind", "comment": "Go back to the start of the tape" },
+    { "state": "rewind", "read": "1", "write": "1", "move": "L", "next": "rewind", "comment": "Go back to the start of the tape" },
+    { "state": "rewind", "read": "#", "write": "#", "move": "L", "next": "rewind", "comment": "Go back to the start of the tape" },
+    { "state": "rewind", "read": "Δ", "write": "Δ", "move": "R", "next": "q_start", "comment": "Start of the tape found, check the counter again" }
+  ]
+}
