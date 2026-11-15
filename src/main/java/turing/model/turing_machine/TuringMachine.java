@@ -37,14 +37,14 @@ public class TuringMachine {
  
     /**
      * Constructs the tape which will be processed by the machine
-     * @param iterations a binary number which represents how many iterations the machine will have
      * @param word a binary sequence which represents the word to be processed by the machine
+     * @param iterations a binary number which represents how many iterations the machine will have
      */
-    public void setTape(String iterations, String word) {
+    public void setTape(String word, String iterations) {
         if (word.length() < 8) {
             throw new IllegalArgumentException("La palabra debe ser un binario de longitud 8 o mayor");
         }
-        String newTape = String.format("ΔΔΔ#%s#%s#ΔΔΔ", iterations, word);
+        String newTape = String.format("Δ#%s#%s#Δ", iterations, word);
         tape = new Tape(newTape);
     }
 
@@ -59,6 +59,16 @@ public class TuringMachine {
         printField("Estados (" + (states == null ? 0 : states.size()) + ")", formatSet(states));
         printField("Estado inicial", initialState);
         printField("Estados de parada", formatSet(haltStates));
+        if (tape == null) {
+            printField("Cinta", "(no asignada)");
+        } else {
+            printField("Cinta", tape.toString());
+            printField("", " ".repeat(tape.getHeadPosition()) + "^ cabezal (posicion " + tape.getHeadPosition() + ")");
+        }
+    }
+
+    private void printCurrentTape() {
+        System.out.println("=== Maquina de Turing: " + name + " ===");
         if (tape == null) {
             printField("Cinta", "(no asignada)");
         } else {
@@ -102,7 +112,6 @@ public class TuringMachine {
                 throw new IllegalStateException("No se encontro una transicion para δ(" + currentState + ", " + symbol
                         + ") en la posicion " + tape.getHeadPosition() + ": " + tape);
             }
-
             tape.write(currentRule.writeSymbol);
 
             switch (currentRule.direction) {
@@ -132,5 +141,6 @@ public class TuringMachine {
 
             currentState = currentRule.nextState;
         }
+        printCurrentTape();
     }
 }
