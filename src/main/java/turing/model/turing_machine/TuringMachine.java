@@ -124,6 +124,9 @@ public class TuringMachine {
                 case "L*":
                     tape.moveLeftUntil(currentRule.getTargetSymbol());
                     break;
+                case "SL":
+                    tape.shiftLeft();
+                    break;
                 case "R":
                     tape.moveRight();
                     break;
@@ -132,6 +135,9 @@ public class TuringMachine {
                     break;
                 case "R*":
                     tape.moveRightUntil(currentRule.getTargetSymbol());
+                    break;
+                case "SR":
+                    tape.shiftRight();
                     break;
                 case "S":
                     break;
