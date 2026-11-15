@@ -1,13 +1,13 @@
 package turing.model.dto;
 
 public class TransitionDto {
-    String state;
-    Character read;
-    Character write;
-    String move;
-	Character target;
-    String next;
-    String comment;
+    private String state;
+    private Character read;
+    private Character write;
+    private String move;
+	private Character target;
+    private String next;
+    private String comment;
     
 	public String getState() {
 		return state;
