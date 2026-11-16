@@ -1,13 +1,22 @@
 package turing;
 
+import turing.config.AppConfig;
 import turing.ui.UIRender;
-import turing.ui.console.ConsoleApp;
+import turing.ui.UIRenderFactory;
 
 public class Main {
-    private final static UIRender consoleApp = new ConsoleApp();
 
     public static void main(String[] args) {
-        consoleApp.run();
+        AppConfig config;
+        try {
+            config = AppConfig.load(args);
+        } catch (IllegalArgumentException anException) {
+            System.err.println("Configuracion invalida: " + anException.getMessage());
+            System.exit(1);
+            return;
+        }
+        UIRender ui = UIRenderFactory.create(config);
+        ui.run();
     }
 
 }
