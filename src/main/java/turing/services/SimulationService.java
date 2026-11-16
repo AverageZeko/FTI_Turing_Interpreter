@@ -15,6 +15,9 @@ public class SimulationService {
         if (word.length() < 8) {
             throw new IllegalArgumentException("La palabra debe ser un binario de longitud 8 o mayor");
         }
+        if (!word.matches("^[01]+$")) {
+            throw new IllegalArgumentException("La palabra debe ser una binario");
+        }
         String newTape = String.format("Δ#%s#%s#Δ", iterations, word);
         Tape tape = new Tape(newTape);
         return tape;
