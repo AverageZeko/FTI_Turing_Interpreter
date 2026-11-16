@@ -1,0 +1,120 @@
+
+=== 1. REGLA 110 ===
+Escriba su cadena binaria a analizar (8 simbolos minimo)
+Escriba el numero binario de repeticiones
+=== Maquina de Turing: Regla 110 - Traza ===
+Alfabeto:           {0, 1, #, Δ, X, Y}
+Espacio vacio:      {Δ}
+Estados (27):       {read_last, dec, carry_1, lc_10, carry_0, seek_start_L0, lc_11, seek_start_L1, check_k, wrap_00, wrap_01, restore_start, q_start, end_gen, goto_end, at_end, at_c_L1, at_c_L0, HALT, restore, lc_00, k_nonzero, lc_01, wrap_11, wrap_10, add_blank, back_old}
+Estado inicial:     q_start
+Estados de parada:  {HALT}
+Cinta:              [Δ]#1#00000000#Δ   ([ ] = cabezal)
+
+  Paso | Estado          | Lee | Escribe | Operacion | Siguiente       | Cinta (despues del paso)
+----------------------------------------------------------------------------------------------------
+     1 | q_start         | Δ   | Δ       | R         | q_start         | Δ[#]1#00000000#Δ
+     2 | q_start         | #   | #       | R         | check_k         | Δ#[1]#00000000#Δ
+     3 | check_k         | 1   | 1       | R* (#)    | k_nonzero       | Δ#1[#]00000000#Δ
+     4 | k_nonzero       | #   | #       | L         | dec             | Δ#[1]#00000000#Δ
+     5 | dec             | 1   | 0       | R* (Δ)    | goto_end        | Δ#0#00000000#[Δ]
+     6 | goto_end        | Δ   | Δ       | L         | at_end          | Δ#0#00000000[#]Δ
+     7 | at_end          | #   | #       | L         | read_last       | Δ#0#0000000[0]#Δ
+     8 | read_last       | 0   | 0       | L* (#)    | seek_start_L0   | Δ#0[#]00000000#Δ
+     9 | seek_start_L0   | #   | #       | R         | at_c_L0         | Δ#0#[0]0000000#Δ
+    10 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#X[0]000000#Δ
+    11 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#X0000000#[Δ]
+    12 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#X0000000[#]0
+    13 | back_old        | #   | #       | L         | back_old        | Δ#0#X000000[0]#0
+    14 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X00000[0]0#0
+    15 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X0000[0]00#0
+    16 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X000[0]000#0
+    17 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X00[0]0000#0
+    18 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X0[0]00000#0
+    19 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X[0]000000#0
+    20 | back_old        | 0   | 0       | L         | back_old        | Δ#0#[X]0000000#0
+    21 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#X[0]000000#0
+    22 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XX[0]00000#0
+    23 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XX000000#0[Δ]
+    24 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XX000000[#]00
+    25 | back_old        | #   | #       | L         | back_old        | Δ#0#XX00000[0]#00
+    26 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX0000[0]0#00
+    27 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX000[0]00#00
+    28 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX00[0]000#00
+    29 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX0[0]0000#00
+    30 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX[0]00000#00
+    31 | back_old        | 0   | 0       | L         | back_old        | Δ#0#X[X]000000#00
+    32 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XX[0]00000#00
+    33 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXX[0]0000#00
+    34 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XXX00000#00[Δ]
+    35 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXX00000[#]000
+    36 | back_old        | #   | #       | L         | back_old        | Δ#0#XXX0000[0]#000
+    37 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXX000[0]0#000
+    38 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXX00[0]00#000
+    39 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXX0[0]000#000
+    40 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXX[0]0000#000
+    41 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XX[X]00000#000
+    42 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXX[0]0000#000
+    43 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXXX[0]000#000
+    44 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XXXX0000#000[Δ]
+    45 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXXX0000[#]0000
+    46 | back_old        | #   | #       | L         | back_old        | Δ#0#XXXX000[0]#0000
+    47 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXX00[0]0#0000
+    48 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXX0[0]00#0000
+    49 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXX[0]000#0000
+    50 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXX[X]0000#0000
+    51 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXXX[0]000#0000
+    52 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXXXX[0]00#0000
+    53 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XXXXX000#0000[Δ]
+    54 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXXXX000[#]00000
+    55 | back_old        | #   | #       | L         | back_old        | Δ#0#XXXXX00[0]#00000
+    56 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXXX0[0]0#00000
+    57 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXXX[0]00#00000
+    58 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXX[X]000#00000
+    59 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXXXX[0]00#00000
+    60 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXXXXX[0]0#00000
+    61 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XXXXXX00#00000[Δ]
+    62 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXXXXX00[#]000000
+    63 | back_old        | #   | #       | L         | back_old        | Δ#0#XXXXXX0[0]#000000
+    64 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXXXX[0]0#000000
+    65 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXXX[X]00#000000
+    66 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXXXXX[0]0#000000
+    67 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXXXXXX[0]#000000
+    68 | lc_00           | 0   | 0       | R* (Δ)    | carry_0         | Δ#0#XXXXXXX0#000000[Δ]
+    69 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXXXXXX0[#]0000000
+    70 | back_old        | #   | #       | L         | back_old        | Δ#0#XXXXXXX[0]#0000000
+    71 | back_old        | 0   | 0       | L         | back_old        | Δ#0#XXXXXX[X]0#0000000
+    72 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXXXXXX[0]#0000000
+    73 | at_c_L0         | 0   | X       | R         | lc_00           | Δ#0#XXXXXXXX[#]0000000
+    74 | lc_00           | #   | #       | L* (#)    | wrap_00         | Δ#0[#]XXXXXXXX#0000000
+    75 | wrap_00         | #   | #       | R         | lc_00           | Δ#0#[X]XXXXXXX#0000000
+    76 | lc_00           | X   | X       | R* (Δ)    | carry_0         | Δ#0#XXXXXXXX#0000000[Δ]
+    77 | carry_0         | Δ   | 0       | L* (#)    | back_old        | Δ#0#XXXXXXXX[#]00000000
+    78 | back_old        | #   | #       | L         | back_old        | Δ#0#XXXXXXX[X]#00000000
+    79 | back_old        | X   | X       | R         | at_c_L0         | Δ#0#XXXXXXXX[#]00000000
+    80 | at_c_L0         | #   | #       | R* (Δ)    | end_gen         | Δ#0#XXXXXXXX#00000000[Δ]
+    81 | end_gen         | Δ   | #       | L* (#)    | restore_start   | Δ#0#XXXXXXXX[#]00000000#
+    82 | restore_start   | #   | #       | L         | restore         | Δ#0#XXXXXXX[X]#00000000#
+    83 | restore         | X   | 0       | L         | restore         | Δ#0#XXXXXX[X]0#00000000#
+    84 | restore         | X   | 0       | L         | restore         | Δ#0#XXXXX[X]00#00000000#
+    85 | restore         | X   | 0       | L         | restore         | Δ#0#XXXX[X]000#00000000#
+    86 | restore         | X   | 0       | L         | restore         | Δ#0#XXX[X]0000#00000000#
+    87 | restore         | X   | 0       | L         | restore         | Δ#0#XX[X]00000#00000000#
+    88 | restore         | X   | 0       | L         | restore         | Δ#0#X[X]000000#00000000#
+    89 | restore         | X   | 0       | L         | restore         | Δ#0#[X]0000000#00000000#
+    90 | restore         | X   | 0       | L         | restore         | Δ#0[#]00000000#00000000#
+    91 | restore         | #   | #       | L* (Δ)    | q_start         | [Δ]#0#00000000#00000000#
+    92 | q_start         | Δ   | Δ       | R         | q_start         | Δ[#]0#00000000#00000000#
+    93 | q_start         | #   | #       | R         | check_k         | Δ#[0]#00000000#00000000#
+    94 | check_k         | 0   | 0       | R¬* (0)   | check_k         | Δ#0[#]00000000#00000000#
+    95 | check_k         | #   | #       | R* (Δ)    | add_blank       | Δ#0#00000000#00000000#[Δ]
+    96 | add_blank       | Δ   | Δ       | S         | HALT            | Δ#0#00000000#00000000#[Δ]
+
+=== Resultado ===
+Estado final:       HALT
+Pasos ejecutados:   96
+Cinta final:        Δ#0#00000000#00000000#[Δ]
+Contador K:         0
+G0:                 00000000   ········
+G1:                 00000000   ········
+
+Programa finalizado.

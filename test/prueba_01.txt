@@ -1,0 +1,28 @@
+
+=== 1. REGLA 110 ===
+Escriba su cadena binaria a analizar (8 simbolos minimo)
+Escriba el numero binario de repeticiones
+=== Maquina de Turing: Regla 110 - Traza ===
+Alfabeto:           {0, 1, #, Δ, X, Y}
+Espacio vacio:      {Δ}
+Estados (27):       {read_last, dec, carry_1, lc_10, carry_0, seek_start_L0, lc_11, seek_start_L1, check_k, wrap_00, wrap_01, restore_start, q_start, end_gen, goto_end, at_end, at_c_L1, at_c_L0, HALT, restore, lc_00, k_nonzero, lc_01, wrap_11, wrap_10, add_blank, back_old}
+Estado inicial:     q_start
+Estados de parada:  {HALT}
+Cinta:              [Δ]#0#00010011#Δ   ([ ] = cabezal)
+
+  Paso | Estado          | Lee | Escribe | Operacion | Siguiente       | Cinta (despues del paso)
+----------------------------------------------------------------------------------------------------
+     1 | q_start         | Δ   | Δ       | R         | q_start         | Δ[#]0#00010011#Δ
+     2 | q_start         | #   | #       | R         | check_k         | Δ#[0]#00010011#Δ
+     3 | check_k         | 0   | 0       | R¬* (0)   | check_k         | Δ#0[#]00010011#Δ
+     4 | check_k         | #   | #       | R* (Δ)    | add_blank       | Δ#0#00010011#[Δ]
+     5 | add_blank       | Δ   | Δ       | S         | HALT            | Δ#0#00010011#[Δ]
+
+=== Resultado ===
+Estado final:       HALT
+Pasos ejecutados:   5
+Cinta final:        Δ#0#00010011#[Δ]
+Contador K:         0
+G0:                 00010011   ···█··██
+
+Programa finalizado.
