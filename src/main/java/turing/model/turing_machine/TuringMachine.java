@@ -65,10 +65,6 @@ public class TuringMachine {
         return currentState;
     }
 
-    public void setCurrentState(String currentState) {
-        this.currentState = currentState;
-    }
-
     /**
      * Constructor for a turing machine
      * 

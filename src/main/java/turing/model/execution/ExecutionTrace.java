@@ -1,25 +1,21 @@
 package turing.model.execution;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class ExecutionTrace {
-    Collection<StepRecord> stepsRecords;
+    private final List<StepRecord> stepsRecords;
 
     public ExecutionTrace() {
         stepsRecords = new ArrayList<>();
     }
 
     public void addStep(StepRecord sr) {
-        if (stepsRecords != null)
-            this.stepsRecords.add(sr);
+        this.stepsRecords.add(sr);
     }
 
-    public Collection<StepRecord> getSteps() {
+    public List<StepRecord> getSteps() {
         return stepsRecords;
     }
 
-    public void initialConfig() {
-
-    }
 }
