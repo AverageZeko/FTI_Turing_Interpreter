@@ -5,13 +5,16 @@ import java.util.Scanner;
 import turing.auxiliary.JsonHelper;
 import turing.model.data.MachineDefinition;
 import turing.model.turing_machine.TuringMachine;
+import turing.services.SimulationService;
 import turing.ui.UIRender;
 
-public class ConsoleApp implements UIRender{
-    private final ConsoleRederer render;
+public class ConsoleApp implements UIRender {
+    private final ConsoleRenderer render;
+    private final SimulationService simulationService;
 
     public ConsoleApp() {
-        this.render = new ConsoleRederer();
+        this.render = new ConsoleRenderer();
+        this.simulationService = new SimulationService();
     }
 
     public void run() {
@@ -24,10 +27,13 @@ public class ConsoleApp implements UIRender{
         String word = aScanner.nextLine();
         System.out.println("Escriba el numero binario de repeticiones");
         String iterations = aScanner.nextLine();
-        aTuringMachine.setTape(word, iterations);
+        aTuringMachine.setTape(simulationService.setTape(word, iterations));
         this.render.printInitialData(aTuringMachine);
-        aTuringMachine.run();
-        aTuringMachine.printResult();
+        this.render.printStepHeader();
+        while (!aTuringMachine.isHalted())
+            this.render.printStep(aTuringMachine.step());
+
+        this.render.printResult(aTuringMachine);
 
         aScanner.close();
         System.out.println("\nPrograma finalizado.");

@@ -3,11 +3,12 @@ package turing.ui.console;
 import java.util.Collection;
 import java.util.Set;
 
+import turing.model.execution.StepRecord;
 import turing.model.turing_machine.Tape;
 import turing.model.turing_machine.TransitionRule;
 import turing.model.turing_machine.TuringMachine;
 
-public class ConsoleRederer {
+public class ConsoleRenderer {
 
     /**
      * Prints the machine's definition (name, alphabet, states, initial state and
@@ -35,11 +36,11 @@ public class ConsoleRederer {
      * the remaining counter and every generation stored in the tape, one per row,
      * so the evolution of the automaton can be read from top to bottom.
      */
-    public void printResult(String currentState,TuringMachine turingMachine) {
+    public void printResult(TuringMachine turingMachine) {
         Tape tape = turingMachine.getTape();
         System.out.println();
         System.out.println("=== Resultado ===");
-        printField("Estado final", currentState);
+        printField("Estado final", turingMachine.getCurrentState());
         printField("Pasos ejecutados", String.valueOf(turingMachine.getSteps()));
         printField("Cinta final", tapeWithHead(tape));
 
@@ -58,7 +59,6 @@ public class ConsoleRederer {
         }
     }
 
-
     private static final String STEP_FORMAT = "%6s | %-15s | %-3s | %-7s | %-9s | %-15s | %s%n";
 
     public void printStepHeader() {
@@ -73,9 +73,10 @@ public class ConsoleRederer {
      * written, operation),
      * followed by the tape after the step with the head's cell between brackets.
      */
-    public void printStep(String state, Character read, TransitionRule rule, int steps, Tape tape) {
-        System.out.printf(STEP_FORMAT, steps, state, read, rule.getWriteSymbol(), formatOperation(rule),
-                rule.getNextState(), tapeWithHead(tape));
+    public void printStep(StepRecord r) {
+        System.out.printf(STEP_FORMAT, r.step(), r.state(), r.readSymbol(), r.rule().getWriteSymbol(),
+                formatOperation(r.rule()),
+                r.rule().getNextState(), tapeWithHead(r.tape(), r.headPosition()));
     }
 
     /**
@@ -97,6 +98,15 @@ public class ConsoleRederer {
         String content = tape.toString();
         int head = tape.getHeadPosition();
         return content.substring(0, head) + "[" + content.charAt(head) + "]" + content.substring(head + 1);
+    }
+
+    /**
+     * Returns the tape as a string with the cell under the head between brackets,
+     * e.g. Δ#10[0]#0001#Δ
+     */
+    private String tapeWithHead(String tape, int headPosition) {
+        return tape.substring(0, headPosition) + "[" + tape.charAt(headPosition) + "]"
+                + tape.substring(headPosition + 1);
     }
 
     /**
