@@ -83,11 +83,33 @@ public class TuringMachine {
     }
 
 
+    /**
+     * Executes the machine until it reaches a halt state.
+     * @return the trace of the whole execution
+     */
     public ExecutionTrace run() {
+        return run(Integer.MAX_VALUE);
+    }
 
-        ExecutionTrace trace = new ExecutionTrace();
-        while (!isHalted())
+    /**
+     * Executes the machine until it reaches a halt state or applies maxSteps steps.
+     * @param maxSteps the maximum number of steps to apply
+     * @return the trace of the execution, marked as truncated if the limit was reached first
+     */
+    public ExecutionTrace run(int maxSteps) {
+        if (tape == null)
+            throw new IllegalStateException("La cinta no fue asignada");
+
+        ExecutionTrace trace = new ExecutionTrace(currentState, tape.toString(), tape.getHeadPosition());
+        int applied = 0;
+        while (!isHalted()) {
+            if (applied == maxSteps) {
+                trace.markTruncated();
+                break;
+            }
             trace.addStep(step());
+            applied++;
+        }
         return trace;
     }
 

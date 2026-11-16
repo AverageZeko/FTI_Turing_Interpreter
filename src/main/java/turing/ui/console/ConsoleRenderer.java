@@ -1,9 +1,11 @@
 package turing.ui.console;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import turing.model.execution.StepRecord;
+import turing.services.Rule110TapeReader;
 import turing.model.turing_machine.Tape;
 import turing.model.turing_machine.TransitionRule;
 import turing.model.turing_machine.TuringMachine;
@@ -44,18 +46,14 @@ public class ConsoleRenderer {
         printField("Pasos ejecutados", String.valueOf(turingMachine.getSteps()));
         printField("Cinta final", tapeWithHead(tape));
 
-        String[] blocks = tape.toString().split("#");
-        // blocks: [Δ, K, G0, G1, ..., Gt, Δ]
-        if (blocks.length > 1) {
-            printField("Contador K", blocks[1]);
+        String counter = Rule110TapeReader.counter(tape.toString());
+        if (counter != null) {
+            printField("Contador K", counter);
         }
-        int generation = 0;
-        for (int i = 2; i < blocks.length; i++) {
-            String cells = blocks[i];
-            if (cells.matches("[01]+")) {
-                printField("G" + generation, cells + "   " + cells.replace('0', '·').replace('1', '█'));
-                generation++;
-            }
+        List<String> generations = Rule110TapeReader.generations(tape.toString());
+        for (int i = 0; i < generations.size(); i++) {
+            String cells = generations.get(i);
+            printField("G" + i, cells + "   " + cells.replace('0', '·').replace('1', '█'));
         }
     }
 
